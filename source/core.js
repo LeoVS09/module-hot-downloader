@@ -3,7 +3,7 @@ import cmd from "node-cmd";
 let download = modules => {
     if(modules.length == 0) return;
     let str = "";
-    for(module of modules)
+    for(let module of modules)
         str += module + " ";
     cmd.run("npm install --save " + str);
     console.log("install " + str);
@@ -11,7 +11,7 @@ let download = modules => {
 
 const have = element => ({
     in: array => {
-        for(let el in array)
+        for(let el of array)
             if(el == element) return true;
         return false;
     }
@@ -61,6 +61,6 @@ export default file =>
         )
     ).then(modules =>
         download(importsIn(file).filter(el =>
-                !have(el).in(modules)
+            !have(el).in(modules)
         ))
     );
