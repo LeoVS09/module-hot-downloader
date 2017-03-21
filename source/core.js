@@ -50,15 +50,53 @@ const getValueOfImport = str => {
     return str.substring(first + 1, last);
 };
 
-export default file =>
+const getInstaledModules = command =>
     new Promise(resolve =>
         cmd.get(
-            "npm ls",
+            command,
             data => resolve(data.split("\n")
                 .filter(str => str[0] == "+" || str[0] == "`")
                 .map(str => str.substring(4,str.indexOf("@")))
             )
         )
+    );
+
+const standard = [
+    'assert',
+    'buffer',
+    'child_process',
+    'cluster',
+    'console',
+    'crypto',
+    'dns',
+    'domain',
+    'events',
+    'fs',
+    'http',
+    'https',
+    'net',
+    'os',
+    'path',
+    'querystring',
+    'readline',
+    'repl',
+    'stream',
+    'string_decoder',
+    'timers',
+    'tls',
+    'tty',
+    'dgram',
+    'url',
+    'util',
+    'v8',
+    'vm',
+    'zlib'
+];
+export default file =>
+    getInstaledModules("npm ls")
+    .then( local =>
+        getInstaledModules("npm -g ls")
+            .then(global => standard.concat(local.concat(global)))
     ).then(modules =>
         download(importsIn(file).filter(el =>
             !have(el).in(modules)
